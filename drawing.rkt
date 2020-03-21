@@ -3,7 +3,7 @@
 (require 2htdp/image
          "basics.rkt")
 
-(provide draw-record-store)
+(provide draw)
 
 ;; code for drawing record stores.
 
@@ -20,9 +20,9 @@
 (define RECORD-TEXT-SIZE 12)
 (define RECORD-TEXT-COLOR "blue")
 (define NO-RECORD-TEXT-COLOR "red")
-(define (get-center-pixel-for-coord x k) (* k (+ x .5)))
+(define NO-RECORDS-MESSAGE "No Records Here...")
 
-;; drawing helpers for each kind of square
+;; drawing helpers for each kind of square (to be improved)
 
 (define (draw-floor w h)
   (rectangle w h "solid" FLOOR-COLOR))
@@ -61,19 +61,34 @@
     [(Record title artist cost tracks facts)
      (above (text title RECORD-TEXT-SIZE RECORD-TEXT-COLOR)
             (text artist RECORD-TEXT-SIZE RECORD-TEXT-COLOR)
-            (text cost RECORD-TEXT-SIZE RECORD-TEXT-COLOR))]))
+            (text (string-append "" (number->string cost)) RECORD-TEXT-SIZE RECORD-TEXT-COLOR))]))
 (define (draw-record-selection recs)
   (overlay
-   (if (null? recs) (text "No Records Here..." RECORD-TEXT-SIZE NO-RECORD-TEXT-COLOR) (draw-record (car recs)))
+   (if (null? recs) (text NO-RECORDS-MESSAGE RECORD-TEXT-SIZE NO-RECORD-TEXT-COLOR) (draw-record (car recs)))
    (rectangle (* SCENE-WIDTH 4/5) (* SCENE-HEIGHT 4/5) "solid" "white")))
+
+
+(define (clerk-text s)
+  (text s RECORD-TEXT-SIZE CLERK-TEXT-COLOR))
+
 (define (draw-clerk-interaction mode)
   (overlay
-   (text "what can i do ya for?" RECORD-TEXT-SIZE CLERK-TEXT-COLOR)
+   (match mode
+    ['start
+     (above
+       (clerk-text "what can i do ya for?")
+       (clerk-text "press b to buy the current records in your bag.")
+       (clerk-text "press t if you finished a task!")
+       (clerk-text "press r to restart our conversation."))]
+     ['bought
+      (clerk-text "great choices!")]
+     ['not-enough
+      (clerk-text "you need more money!")])
    (rectangle (* SCENE-WIDTH 4/5) (* SCENE-HEIGHT 4/5) "solid" "white")))
 
 (define (draw-record-store R)
   (match R
-    [(Store grid mode bag)
+    [(Store grid mode taskbar bag money owned)
      (let* ((k-cols (length grid))
             (k-rows (length (car grid)))
             (SPACE-WIDTH (/ SCENE-WIDTH k-cols))
@@ -87,3 +102,72 @@
            [`(clerk ,mode)
             (overlay (draw-clerk-interaction mode)
                      store-background)])))]))
+
+
+;;; a sidebar with useful info
+(define SIDEBAR-TEXT-COLOR "black")
+(define SIDEBAR-TEXT-SIZE 20)
+(define SIDEBAR-BACKGROUND-COLOR "white")
+(define (sidebar-text x) (text x SIDEBAR-TEXT-SIZE SIDEBAR-TEXT-COLOR))
+(define (draw-sidebar R)
+  (match R
+    [(Store grid mode taskbar bag money owned)
+     (overlay
+      (above (sidebar-text (format "Cash: $~s" money))
+             (sidebar-text "\n\n")
+             (sidebar-text (format "Record Bag:"))
+             (foldr above empty-image (map (λ (x) (sidebar-text (string-append (Record-title x) ": $" (number->string (Record-cost x))))) bag))
+             (sidebar-text "\n\n")
+             (sidebar-text "To walk around,")
+             (sidebar-text "use the arrow keys.")
+             (sidebar-text "To look at records,")
+             (sidebar-text "walk up to a shelf and press space.")
+             (sidebar-text "To put a record in your bag,")
+             (sidebar-text "press space while looking at the one you want.")
+             (sidebar-text "To talk to the clerk,")
+             (sidebar-text "walk up to him and press space."))
+      (rectangle (/ SCENE-WIDTH 2) SCENE-HEIGHT "solid" SIDEBAR-BACKGROUND-COLOR))]))
+
+
+;;;; taskbar with info
+
+(define TASKBAR-BACKGROUND-COLOR "white")
+(define TASKBAR-TEXT-SIZE 20)
+(define TASKBAR-DONE-TEXT-COLOR "green")
+(define TASKBAR-NOT-DONE-TEXT-COLOR "red")
+(define TASKBAR-PAYMENT-COLOR "white")
+(define (draw-task t)
+  (above
+   (if (cadr t)
+      (text (car t) TASKBAR-TEXT-SIZE TASKBAR-DONE-TEXT-COLOR)
+      (text (car t) TASKBAR-TEXT-SIZE TASKBAR-NOT-DONE-TEXT-COLOR))
+   (if (null? (cddr t))
+       empty-image
+       (text (format "Pays: $~s" (caddr t)) TASKBAR-TEXT-SIZE TASKBAR-PAYMENT-COLOR))))
+
+(define (draw-taskbar R)
+  (match R
+    [(Store grid mode taskbar bag money owned)
+     (overlay
+      (foldr
+       (λ (x a) (above (draw-task x) a))
+       empty-image
+      taskbar)
+      (rectangle (/ SCENE-WIDTH 2) SCENE-HEIGHT "solid" TASKBAR-BACKGROUND-COLOR))]))
+
+(define (draw-personal-collection R)
+  (match R
+    [(Store grid mode taskbar bag money owned)
+     (overlay
+      (foldr
+       (λ (x a) (above (text (Record-title x) 20 "black") a))
+       empty-image
+      owned)
+      (rectangle (/ SCENE-WIDTH 2) SCENE-HEIGHT "solid" TASKBAR-BACKGROUND-COLOR))]))
+;; wrapper
+(define (draw R)
+  (beside
+   (draw-record-store R)
+   (draw-sidebar R)
+   (draw-taskbar R)
+   (draw-personal-collection R)))

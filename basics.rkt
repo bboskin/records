@@ -3,16 +3,17 @@
 (provide (all-defined-out))
 
 
-;; struct definitions, basic functions.
+;; struct definitions
 
 (struct Record [title artist cost tracks facts])
 
-(struct Store [grid mode bag])
+(struct Store [grid mode taskbar record-bag money owned])
 
 ;; basic list ops
 (define (front-to-back ls)
   (if (null? ls) ls
       (append (cdr ls) (list (car ls)))))
+
 (define (back-to-front ls)
   (if (null? ls) ls
       (let ((ls (reverse ls)))

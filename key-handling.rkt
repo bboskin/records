@@ -9,15 +9,15 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; handlers used in WALKING mode
 
-(define (do-space grid bag)
+(define (do-space grid taskbar bag money owned)
   (cond
     [(player-adjacent-to-clerk? grid)
      =>
-     (λ (mode) (Store grid `(clerk ,mode) bag))]
+     (λ (mode) (Store grid `(clerk ,mode) taskbar bag money owned))]
     [(player-adjacent-to-records? grid)
      =>
-     (λ (recs) (Store grid `(digging ,recs) bag))]
-    [else (Store grid 'walking bag)]))
+     (λ (recs) (Store grid `(digging ,recs) taskbar bag money owned))]
+    [else (Store grid 'walking taskbar bag money owned)]))
 
 (define (do-up grid)
   (let-values (((x y) (find-player grid)))
@@ -52,28 +52,39 @@
 ;; key-handler
 (define (key-handler R input)
   (match R
-    [(Store grid mode bag)
+    [(Store grid mode taskbar bag money owned)
      (match mode
        ['walking
-        (cond
-          [(string=? input " ") (do-space grid bag)]
-          [(string=? input "up") (Store (do-up grid) 'walking bag)]
-          [(string=? input "down") (Store (do-down grid) 'walking bag)]
-          [(string=? input "left") (Store (do-left grid) 'walking bag)]
-          [(string=? input "right") (Store (do-right grid) 'walking bag)]
+        (match input
+          [" " (do-space grid taskbar bag money owned)]
+          ["up" (Store (do-up grid) 'walking taskbar bag money owned)]
+          ["down" (Store (do-down grid) 'walking taskbar bag money owned)]
+          ["left" (Store (do-left grid) 'walking taskbar bag money owned)]
+          ["right" (Store (do-right grid) 'walking taskbar bag money owned)]
           [else R])]
        [`(digging ,recs)
-        (cond
-          [(string=? input "x") (Store grid 'walking bag)]
-          [(string=? input "up") (Store grid `(digging ,(front-to-back recs)) bag)]
-          [(string=? input "down") (Store grid `(digging ,(back-to-front recs)) bag)]
-          [(string=? input " ") (if (null? recs) R (Store grid `(digging ,(cdr recs)) (cons (car recs) bag)))]
+        (match input
+          ["x" (Store grid 'walking taskbar bag money owned)]
+          ["up" (Store grid `(digging ,(front-to-back recs)) taskbar bag money owned)]
+          ["down" (Store grid `(digging ,(back-to-front recs)) taskbar bag money owned)]
+          [" " (if (null? recs) R (Store grid `(digging ,(cdr recs)) taskbar (cons (car recs) bag) money owned))]
           [else R])]
        [`(clerk ,mode)
-        (cond
-          [(string=? input "x") (Store grid 'walking bag)]
+        (match input
+          ["x" (Store grid 'walking taskbar bag money owned)]
           [else (match mode
-                  ['start R]
-                  [else R])])]
+                  ['start
+                   (match input
+                     ["b" (let ((cost-of-bag (foldr (λ (x a) (+ (Record-cost x) a)) 0 bag)))
+                            (if (>= money cost-of-bag)
+                              (Store grid '(clerk bought) taskbar '() (- money cost-of-bag) (append bag owned))
+                              (Store grid '(clerk not-enough) taskbar bag money owned)))]
+                     ["t" R]
+                     ["r" (Store grid '(clerk start) taskbar bag money owned)]
+                     [else R])]
+                  [else
+                   (match input
+                     ["r" (Store grid '(clerk start) taskbar bag money owned)]
+                     [else R])])])]
        [else (error "invalid mode")])]
     [else (error "not a store")]))

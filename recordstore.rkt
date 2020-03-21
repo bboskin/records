@@ -1,13 +1,12 @@
 #lang racket
 
-(require "basics.rkt")
-
 (provide find-player
          lookup-loc
          set-location
          set-player
          player-adjacent-to-records?
          player-adjacent-to-clerk?)
+
 ;; A file to implement the record store features
 
 
