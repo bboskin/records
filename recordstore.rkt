@@ -6,6 +6,8 @@
 ;; A file to implement the record store features (including walking around and drawing everything)
 
 
+;; Run this file to play! arrow keys to move around (you're the blue square), space bar to look at records or talk to clerk, x to go back to walking.
+
 (struct Store (grid mode bag)
   #:transparent)
 
@@ -202,6 +204,9 @@
           [else R])]
        [else R])]
     [else (error "not a store")]))
+
+
+
 
 (big-bang S1
   [on-key key-handler]
