@@ -6,7 +6,8 @@
          "recordstore.rkt")
 (provide key-handler)
 
-;; handlers for different key inputs
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; handlers used in WALKING mode
 
 (define (do-space grid bag)
   (cond
@@ -71,6 +72,8 @@
        [`(clerk ,mode)
         (cond
           [(string=? input "x") (Store grid 'walking bag)]
-          [else R])]
-       [else R])]
+          [else (match mode
+                  ['start R]
+                  [else R])])]
+       [else (error "invalid mode")])]
     [else (error "not a store")]))

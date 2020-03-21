@@ -7,7 +7,7 @@
 
 (struct Record [title artist cost tracks facts])
 
-(struct Store [grid mode bag] #:transparent)
+(struct Store [grid mode bag])
 
 ;; basic list ops
 (define (front-to-back ls)
