@@ -4,7 +4,7 @@
 
 
 
-(struct Record [title artist tracks facts])
+(struct Record [title artist genre tracks facts])
 
 (define KindOfBlue
   (Record "Kind of Blue"
