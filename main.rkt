@@ -18,9 +18,9 @@
 
 (define S1
   (Store
-   `((#f (section ,HIPHOP) #f (clerk start))
-     (#f #f #f #f)
-     ((section ,JAZZ) #f #f #f)
+   `((#f (section ,HIPHOP) #f #f)
+     ((clerk start) #f #f #f)
+     (#f #f #f (section ,JAZZ))
      (#f #f #f player))
    'walking
    TASKBAR1
@@ -31,3 +31,11 @@
 (big-bang S1
   [on-key key-handler]
   [to-draw draw])
+
+
+#|
+TODO:
+implement task-checking, ability to get money
+make the records only change color when you're next to them (and move record menu somewhere else)
+
+|#

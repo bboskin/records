@@ -10,8 +10,8 @@
 
 
 ;; constants for drawing
-(define SCENE-HEIGHT 200)
-(define SCENE-WIDTH 200)
+(define SCENE-HEIGHT 400)
+(define SCENE-WIDTH 400)
 (define PLAYER-COLOR "blue")
 (define CLERK-COLOR "red")
 (define CLERK-DESK-COLOR "brown")
@@ -135,7 +135,7 @@
 (define TASKBAR-TEXT-SIZE 20)
 (define TASKBAR-DONE-TEXT-COLOR "green")
 (define TASKBAR-NOT-DONE-TEXT-COLOR "red")
-(define TASKBAR-PAYMENT-COLOR "white")
+(define TASKBAR-PAYMENT-COLOR "orange")
 (define (draw-task t)
   (above
    (if (cadr t)
