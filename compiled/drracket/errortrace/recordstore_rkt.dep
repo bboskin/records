@@ -1,0 +1,1 @@
+("7.1" ("591f1b356fa37b6cb7df21d9d35105ad7674369a" . "287dc40450f30fcc45b585466f917ad755c8434d") #"/Users/benboskin/Desktop/recordz/basics.rkt" (collects #"errortrace" #"errortrace-key.rkt") (collects #"racket" #"main.rkt") (collects #"racket" #"runtime-config.rkt") (indirect collects #"racket" #"match" #"gen-match.rkt") (indirect collects #"racket" #"match" #"parse.rkt"))

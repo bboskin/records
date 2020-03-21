@@ -1,14 +1,12 @@
 #lang racket
 
 (provide (all-defined-out))
-
-
-
-(struct Record [title artist tracks facts])
+(require "basics.rkt")
 
 (define KindOfBlue
   (Record "Kind of Blue"
           "Miles Davis"
+          "$15"
           '(so-what freddie-freeloader)
           '((john-coltrane plays tenor-saxophone)
             (miles-davis plays trumpet)
@@ -21,6 +19,7 @@
 (define ALoveSupreme
   (Record "A Love Supreme"
           "John Coltrane"
+          "$15"
           '(p1 p2 p3 p4)
           '((john-coltrane plays tenor-saxophone)
             (mccoy-tyner plays piano)
@@ -30,6 +29,7 @@
 (define PortraitInJazz
   (Record "Portrait In Jazz"
           "Bill Evans"
+          "$15"
           '(nardis)
           '((bill-evans plays piano)
             (paul-motian plays drums)
@@ -38,6 +38,7 @@
 (define Thrust
   (Record "Thrust"
           "Herbie Hancock"
+          "$15"
           '(palm-grease actual-proof butterfly spank-a-lee)
           '((herbie-hancock plays keys)
             (mike-clark plays drums)
@@ -48,6 +49,7 @@
 (define Madvillainy
   (Record "Madvillainy"
           "Madvillain"
+          "$15"
           '(shadows-of-tomorrow)
           `((MF-DOOM plays MC)
             (madlib plays beats)
@@ -57,6 +59,7 @@
 (define TakeMeToYourLeader
   (Record "Take Me To Your Leader"
           "King Geedorah"
+          "$15"
           '(fazers)
           '((king-geedorah plays MC)
             (MF-DOOM plays beats))))
@@ -64,6 +67,7 @@
 (define AnglesWithoutEdges
   (Record "Angles Without Edges"
           "Yesterdays New Quintet"
+          "$15"
           '(track1)
           '((yesterdays-new-quintet plays band)
             (madlib plays producer)
@@ -72,24 +76,10 @@
 (define HeadnodSuite
   (Record "Headnod Suite"
           "Karriem Riggins"
+          "$15"
           '(track1)
           `((karriem-rigins plays producer)
             (karriem-rigins plays drums)
             (bob-hurst plays bass)
             (karriem-riggins samples ,Thrust))))
-
-(define RECORDS
-  (list KindOfBlue
-        
-        ALoveSupreme
-        
-        PortraitInJazz
-        
-        Thrust
-        HeadnodSuite
-        
-        Madvillainy
-        
-        TakeMeToYourLeader
-        AnglesWithoutEdges))
 
