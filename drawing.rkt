@@ -10,8 +10,8 @@
 
 
 ;; constants for drawing
-(define SCENE-HEIGHT 400)
-(define SCENE-WIDTH 400)
+(define SCENE-HEIGHT 500)
+(define SCENE-WIDTH 500)
 (define PLAYER-COLOR "blue")
 (define CLERK-COLOR "red")
 (define CLERK-DESK-COLOR "brown")
@@ -125,7 +125,10 @@
              (sidebar-text "To put a record in your bag,")
              (sidebar-text "press space while looking at the one you want.")
              (sidebar-text "To talk to the clerk,")
-             (sidebar-text "walk up to him and press space."))
+             (sidebar-text "walk up to him and press space.")
+             (sidebar-text "To return to the floor from a submenu,")
+             (sidebar-text "press x.")
+             (sidebar-text "To empty your record bag, press d."))
       (rectangle (/ SCENE-WIDTH 2) SCENE-HEIGHT "solid" SIDEBAR-BACKGROUND-COLOR))]))
 
 
@@ -153,7 +156,7 @@
        (λ (x a) (above (draw-task x) a))
        empty-image
       taskbar)
-      (rectangle (/ SCENE-WIDTH 2) SCENE-HEIGHT "solid" TASKBAR-BACKGROUND-COLOR))]))
+      (rectangle (/ SCENE-WIDTH 2) (/ SCENE-HEIGHT 2) "solid" TASKBAR-BACKGROUND-COLOR))]))
 
 (define (draw-personal-collection R)
   (match R
@@ -163,11 +166,12 @@
        (λ (x a) (above (text (Record-title x) 20 "black") a))
        empty-image
       owned)
-      (rectangle (/ SCENE-WIDTH 2) SCENE-HEIGHT "solid" TASKBAR-BACKGROUND-COLOR))]))
+      (rectangle (/ SCENE-WIDTH 2) (/ SCENE-HEIGHT 2) "solid" TASKBAR-BACKGROUND-COLOR))]))
 ;; wrapper
 (define (draw R)
   (beside
    (draw-record-store R)
    (draw-sidebar R)
-   (draw-taskbar R)
-   (draw-personal-collection R)))
+   (above
+    (draw-taskbar R)
+    (draw-personal-collection R))))

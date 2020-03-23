@@ -57,6 +57,7 @@
        ['walking
         (match input
           [" " (do-space grid taskbar bag money owned)]
+          ["d" (Store grid 'walking taskbar '() money owned)]
           ["up" (Store (do-up grid) 'walking taskbar bag money owned)]
           ["down" (Store (do-down grid) 'walking taskbar bag money owned)]
           ["left" (Store (do-left grid) 'walking taskbar bag money owned)]
