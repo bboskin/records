@@ -1,7 +1,8 @@
 #lang racket
 
 (require 2htdp/image
-         "basics.rkt")
+         "basics.rkt"
+         "tasks.rkt")
 
 (provide draw)
 
@@ -17,7 +18,7 @@
 (define CLERK-DESK-COLOR "brown")
 (define CLERK-TEXT-COLOR "brown")
 (define FLOOR-COLOR "tan")
-(define RECORD-TEXT-SIZE 12)
+(define RECORD-TEXT-SIZE 20)
 (define RECORD-TEXT-COLOR "blue")
 (define NO-RECORD-TEXT-COLOR "red")
 (define NO-RECORDS-MESSAGE "No Records Here...")
@@ -83,7 +84,11 @@
      ['bought
       (clerk-text "great choices!")]
      ['not-enough
-      (clerk-text "you need more money!")])
+      (clerk-text "you need more money!")]
+     ['task-done
+      (clerk-text "Way to go!")]
+     ['no-task
+      (clerk-text "Sorry, that didn't complete any new tasks")])
    (rectangle (* SCENE-WIDTH 4/5) (* SCENE-HEIGHT 4/5) "solid" "white")))
 
 (define (draw-record-store R)
@@ -96,6 +101,7 @@
        (let ((store-background (draw-store-background grid SPACE-WIDTH SPACE-HEIGHT)))
          (match mode
            ['walking store-background]
+           ['won store-background]
            [`(digging ,recs)
             (overlay (draw-record-selection recs)
                      store-background)]
@@ -131,33 +137,6 @@
              (sidebar-text "To empty your record bag, press d."))
       (rectangle (/ SCENE-WIDTH 2) SCENE-HEIGHT "solid" SIDEBAR-BACKGROUND-COLOR))]))
 
-
-;;;; taskbar with info
-
-(define TASKBAR-BACKGROUND-COLOR "white")
-(define TASKBAR-TEXT-SIZE 20)
-(define TASKBAR-DONE-TEXT-COLOR "green")
-(define TASKBAR-NOT-DONE-TEXT-COLOR "red")
-(define TASKBAR-PAYMENT-COLOR "orange")
-(define (draw-task t)
-  (above
-   (if (cadr t)
-      (text (car t) TASKBAR-TEXT-SIZE TASKBAR-DONE-TEXT-COLOR)
-      (text (car t) TASKBAR-TEXT-SIZE TASKBAR-NOT-DONE-TEXT-COLOR))
-   (if (null? (cddr t))
-       empty-image
-       (text (format "Pays: $~s" (caddr t)) TASKBAR-TEXT-SIZE TASKBAR-PAYMENT-COLOR))))
-
-(define (draw-taskbar R)
-  (match R
-    [(Store grid mode taskbar bag money owned)
-     (overlay
-      (foldr
-       (λ (x a) (above (draw-task x) a))
-       empty-image
-      taskbar)
-      (rectangle (/ SCENE-WIDTH 2) (/ SCENE-HEIGHT 2) "solid" TASKBAR-BACKGROUND-COLOR))]))
-
 (define (draw-personal-collection R)
   (match R
     [(Store grid mode taskbar bag money owned)
@@ -166,7 +145,33 @@
        (λ (x a) (above (text (Record-title x) 20 "black") a))
        empty-image
       owned)
+      (rectangle (/ SCENE-WIDTH 2) (/ SCENE-HEIGHT 2) "solid" SIDEBAR-BACKGROUND-COLOR))]))
+
+;; drawing the taskbar
+(define TASKBAR-BACKGROUND-COLOR "white")
+(define TASKBAR-TEXT-SIZE 20)
+(define TASKBAR-DONE-TEXT-COLOR "green")
+(define TASKBAR-NOT-DONE-TEXT-COLOR "red")
+(define TASKBAR-PAYMENT-COLOR "orange")
+(define (draw-task t)
+  (match t
+    [(Task tt reward test?)
+     (above
+      (text tt TASKBAR-TEXT-SIZE TASKBAR-NOT-DONE-TEXT-COLOR)
+      (text (format "Pays: $~s and ~s records" (car reward) (length (cdr reward))) TASKBAR-TEXT-SIZE TASKBAR-PAYMENT-COLOR))]))
+
+(define (draw-taskbar R)
+  (match R
+    [(Store grid mode taskbar bag money owned)
+     (overlay
+      (if (null? taskbar)
+          (text "You beat the level!" TASKBAR-TEXT-SIZE TASKBAR-PAYMENT-COLOR)
+          (foldr
+           (λ (x a) (above (draw-task x) a))
+           empty-image
+           taskbar))
       (rectangle (/ SCENE-WIDTH 2) (/ SCENE-HEIGHT 2) "solid" TASKBAR-BACKGROUND-COLOR))]))
+
 ;; wrapper
 (define (draw R)
   (beside

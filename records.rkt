@@ -60,7 +60,7 @@
           `((MF-DOOM plays MC)
             (madlib plays beats)
             (quasimoto plays MC)
-            (samples ,PortraitInJazz))))
+            (samples "Portrait In Jazz"))))
 
 (define TakeMeToYourLeader
   (Record "Take Me To Your Leader"
@@ -86,5 +86,37 @@
           '(track1)
           `((karriem-rigins plays producer)
             (karriem-rigins plays drums)
-            (samples ,Thrust))))
+            (samples "Thrust"))))
+
+(define FreckleSeason
+  (Record "Freckle Season"
+          "Orla Gartland"
+          15
+          '(track1)
+          `((tessa loves her)
+            (ben loves tessa))))
+
+(define NoDogsAllowed
+  (Record "No Dogs Allowed"
+          "Sidney Gish"
+          15
+          '(track1)
+          `((tessa loves her)
+            (ben loves tessa))))
+
+(define Human
+  (Record "Human"
+          "Dodie"
+          15
+          '(track1)
+          `((tessa loves her)
+            (ben loves tessa))))
+
+(define FineLine
+  (Record "Fine Line"
+          "Harry Styles"
+          20
+          '(track1)
+          `((tessa loves harry styles)
+            (ben loves tessa))))
 

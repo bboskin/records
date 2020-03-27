@@ -3,7 +3,8 @@
 ;; all functions related to key-handling
 
 (require "basics.rkt"
-         "recordstore.rkt")
+         "recordstore.rkt"
+         "tasks.rkt")
 (provide key-handler)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -49,20 +50,25 @@
        (set-player grid (add1 x) y)]
       [else grid])))
 
-;; key-handler
-(define (key-handler R input)
+(define (walk R input)
   (match R
     [(Store grid mode taskbar bag money owned)
-     (match mode
-       ['walking
-        (match input
+     (match input
           [" " (do-space grid taskbar bag money owned)]
           ["d" (Store grid 'walking taskbar '() money owned)]
           ["up" (Store (do-up grid) 'walking taskbar bag money owned)]
           ["down" (Store (do-down grid) 'walking taskbar bag money owned)]
           ["left" (Store (do-left grid) 'walking taskbar bag money owned)]
           ["right" (Store (do-right grid) 'walking taskbar bag money owned)]
-          [else R])]
+          [else R])]))
+
+;; key-handler
+(define (key-handler R input)
+  (match R
+    [(Store grid mode taskbar bag money owned)
+     (match mode
+       ['walking (walk R input)]
+       ['won (walk R input)]
        [`(digging ,recs)
         (match input
           ["x" (Store grid 'walking taskbar bag money owned)]
@@ -80,7 +86,12 @@
                             (if (>= money cost-of-bag)
                               (Store grid '(clerk bought) taskbar '() (- money cost-of-bag) (append bag owned))
                               (Store grid '(clerk not-enough) taskbar bag money owned)))]
-                     ["t" R]
+                     ["t" (let-values (((money-reward record-reward new-taskbar) (check-tasks taskbar bag owned)))
+                            (if (= (length taskbar) (length new-taskbar))
+                                (Store grid '(clerk no-task) new-taskbar '() (+ money-reward money) (append record-reward owned))
+                                (if (null? taskbar)
+                                    (Store grid 'won new-taskbar '() (+ money-reward money) (append record-reward owned))
+                                    (Store grid '(clerk task-done) new-taskbar '() (+ money-reward money) (append record-reward owned)))))]
                      ["r" (Store grid '(clerk start) taskbar bag money owned)]
                      [else R])]
                   [else
