@@ -25,12 +25,29 @@
 
 ;; drawing helpers for each kind of square (to be improved)
 
-(define (draw-floor w h)
-  (rectangle w h "solid" FLOOR-COLOR))
+(define (draw-player w h)
+  (let ()
+    (overlay
+     (above
+     (circle (floor (/ (- h (/ h 5) (/ h 3)) 3)) "solid" "beige")
+     (beside
+      (rectangle (/ w 10) (/ h 3) "solid" "red")
+      (overlay
+       (square (/ h 5) "solid" "red")
+       (rectangle (/ w 3) (/ h 3) "solid" "white"))
+      (rectangle (/ w 10) (/ h 3) "solid" "red"))
+     (rectangle (/ w 3) (/ h 3) "solid" "brown")
+     )
+     (rectangle w h "solid" FLOOR-COLOR))))
+
+#;
 (define (draw-player w h)
   (overlay
    (circle (/ (min w h) 2) "solid" PLAYER-COLOR)
    (rectangle w h "solid" FLOOR-COLOR)))
+
+(define (draw-floor w h)
+  (rectangle w h "solid" FLOOR-COLOR))
 
 (define (draw-clerk w h)
   (overlay
