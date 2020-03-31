@@ -88,10 +88,10 @@
                               (Store grid '(clerk not-enough) taskbar bag money owned)))]
                      ["t" (let-values (((money-reward record-reward new-taskbar) (check-tasks taskbar bag owned)))
                             (if (= (length taskbar) (length new-taskbar))
-                                (Store grid '(clerk no-task) new-taskbar '() (+ money-reward money) (append record-reward owned))
+                                (Store grid '(clerk no-task) new-taskbar bag (+ money-reward money) (append record-reward owned))
                                 (if (null? taskbar)
                                     (Store grid 'won new-taskbar '() (+ money-reward money) (append record-reward owned))
-                                    (Store grid '(clerk task-done) new-taskbar '() (+ money-reward money) (append record-reward owned)))))]
+                                    (Store grid '(clerk task-done) new-taskbar bag (+ money-reward money) (append record-reward owned)))))]
                      ["r" (Store grid '(clerk start) taskbar bag money owned)]
                      [else R])]
                   [else

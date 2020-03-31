@@ -13,22 +13,18 @@
 (define SNUG  (list FreckleSeason NoDogsAllowed Human FineLine))
 (define TASKBAR1
   (list
-   (Task "Buy a Miles Davis album."
+   (Task "Find a Miles Davis album."
          '(0)
-         (λ (b o)
-           (ormap (λ (x) (string=? "Miles Davis" (Record-artist x))) o)))
+         (find-k-albums-by 1 "Miles Davis"))
    (Task "Find an album sampled by another album."
          '(40)
          (λ (b o)
            (ormap (λ (r) (sampled-by-any? r (append b o)))
                   (append b o))))
-   (Task "Find two records with Wayne Shorter." '(30)
-         (λ (b o)
-           (ormap (λ (r) (or (member '(wayne-shorter plays alto-saxophone) (Record-facts r))
-                             (string=? "Wayne Shorter" (Record-artist r))))
-                  (append b o))))
+   (Task "Buy two records with Wayne Shorter." '(30)
+         (buy-k-albums-with 2 "Wayne Shorter" 'wayne-shorter))
    (Task "Buy five albums." '(0)
-         (λ (b o) (>= (length o) 5)))))
+         (buy-k-albums 5))))
 
 (define S1
   (Store

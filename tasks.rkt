@@ -5,10 +5,40 @@
 
 (provide check-tasks
          Task
-         sampled-by-any?)
+         sampled-by-any?
+
+         find-k-albums-by
+         buy-k-albums
+         buy-k-albums-with)
 
 (struct Task [text reward test?])
 
+;; macros to make generic tasks
+
+(define-syntax buy-k-albums
+  (syntax-rules ()
+    ((_ k)
+     (λ (bag owned)
+       (>= (length owned) k)))))
+
+(define-syntax find-k-albums-by
+  (syntax-rules ()
+    ((_ k artist)
+     (λ (bag owned)
+       (let ((relevant
+              (filter
+               (λ (r) (string=? (Record-artist r) artist))
+               (append bag owned))))
+         (>= (length relevant) k))))))
+
+(define-syntax buy-k-albums-with
+  (syntax-rules ()
+    ((_ k artist sym)
+     (λ (bag owned)
+       (let ((relevant
+              (filter (λ (r) (or (string=? artist (Record-artist r))
+                                 (member sym (map car (Record-facts r))))) owned)))
+         (>= (length relevant) k))))))
 
 (define (sampled-by-any? r rs)
   (let ((title (Record-title r)))
